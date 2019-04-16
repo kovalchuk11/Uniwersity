@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 //Processing library
+import de.fhpotsdam.unfolding.providers.Microsoft;
 import processing.core.PApplet;
 
 //Unfolding libraries
@@ -58,7 +59,7 @@ public class EarthquakeCityMap extends PApplet {
 		    earthquakesURL = "2.5_week.atom"; 	// Same feed, saved Aug 7, 2015, for working offline
 		}
 		else {
-			map = new UnfoldingMap(this, 200, 50, 700, 500, new Google.GoogleMapProvider());
+			map = new UnfoldingMap(this, 200, 50, 700, 500, new Microsoft.HybridProvider ());
 			// IF YOU WANT TO TEST WITH A LOCAL FILE, uncomment the next line
 			//earthquakesURL = "2.5_week.atom";
 		}
@@ -77,7 +78,11 @@ public class EarthquakeCityMap extends PApplet {
 	    // to create a new SimplePointMarker for each PointFeature in 
 	    // earthquakes.  Then add each new SimplePointMarker to the 
 	    // List markers (so that it will be added to the map in the line below)
-	    
+		for (PointFeature pf : earthquakes) {
+			if(earthquakes.size() > 0) {
+				markers.add(createMarker(pf));
+			}
+		}
 	    
 	    // Add the markers to the map so that they are displayed
 	    map.addMarkers(markers);
@@ -97,17 +102,19 @@ public class EarthquakeCityMap extends PApplet {
 		// To print all of the features in a PointFeature (so you can see what they are)
 		// uncomment the line below.  Note this will only print if you call createMarker 
 		// from setup
-		//System.out.println(feature.getProperties());
+//		System.out.println(feature.getProperties());
 		
 		// Create a new SimplePointMarker at the location given by the PointFeature
 		SimplePointMarker marker = new SimplePointMarker(feature.getLocation());
-		
 		Object magObj = feature.getProperty("magnitude");
 		float mag = Float.parseFloat(magObj.toString());
-		
+//		System.out.println(mag);
 		// Here is an example of how to use Processing's color method to generate 
 	    // an int that represents the color yellow.  
-	    int yellow = color(255, 255, 0);
+	    int blue = color(0, 0, 255);
+		int yellow = color(255, 255, 0);
+		int red = color(255, 0, 0);
+		int dark = color(0, 0, 0);
 		
 		// TODO (Step 4): Add code below to style the marker's size and color 
 	    // according to the magnitude of the earthquake.  
@@ -116,7 +123,18 @@ public class EarthquakeCityMap extends PApplet {
 	    // Rather than comparing the magnitude to a number directly, compare 
 	    // the magnitude to these variables (and change their value in the code 
 	    // above if you want to change what you mean by "moderate" and "light")
-	    
+		if(mag <= 4.0){
+			marker.setRadius(5);
+			marker.setColor(blue);
+		}else if ((mag > 4.0) && (mag < 5)){
+			marker.setRadius(10);
+			marker.setColor(yellow);
+		}else if (mag >= 5.0){
+			marker.setRadius(20);
+			marker.setColor(red);
+		}
+
+
 	    
 	    // Finally return the marker
 	    return marker;
@@ -134,6 +152,24 @@ public class EarthquakeCityMap extends PApplet {
 	private void addKey() 
 	{	
 		// Remember you can use Processing's graphics methods here
+		noFill();
+		rect(10, 50, 180, 500, 7);
+		fill(255);
+		textSize(20);
+		textAlign(LEFT);
+		text("Earthquake key", 11, 70);
+		textSize(15);
+		textAlign(LEFT);
+		text("Magnitude 5+", 11, 110);
+		text("Magnitude 4+", 11, 150);
+		text("Magnitude 4-", 11, 190);
+		fill(255, 0, 0);
+		ellipse(150, 110, 20, 20);
+		fill(255, 255, 0);
+		ellipse(150, 150, 10, 10);
+		fill(0, 0, 255);
+		ellipse(150, 190, 5, 5);
+
 	
 	}
 }
